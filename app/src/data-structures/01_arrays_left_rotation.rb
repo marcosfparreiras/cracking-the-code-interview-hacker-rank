@@ -48,4 +48,4 @@ module DataStructures
 end
 
 # Answer on HackerRank
-# puts ArrayLeftRotator.new(n, a, k).rotate
+# puts DataStructures::ArrayLeftRotator.new(n, a, k).rotate
