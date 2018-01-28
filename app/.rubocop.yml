@@ -1,0 +1,15 @@
+Documentation:
+  Enabled: false
+
+AllCops:
+  Exclude:
+    - 'spec/spec_helper.rb'
+    - 'Gemfile'
+
+Metrics/ModuleLength:
+  Exclude:
+    - "**/*_spec.rb"
+
+Metrics/BlockLength:
+  Exclude:
+    - "**/*_spec.rb"
