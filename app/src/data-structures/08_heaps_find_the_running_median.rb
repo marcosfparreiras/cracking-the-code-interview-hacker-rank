@@ -4,8 +4,17 @@ module DataStructures
   class BaseHeap
     attr_accessor :items
 
-    def initialize
+    def initialize(type = :min)
       @items = []
+
+      case type
+      when :min
+        @op = :<
+        @reverse_op = :>
+      when :max
+        @op = :>
+        @reverse_op = :<
+      end
     end
 
     def peek
@@ -30,9 +39,28 @@ module DataStructures
 
     private
 
-    def heapify_down; end
+    def heapify_down
+      idx = 0
+      while has_left_child(idx)
+        selected_child_idx = left_children_index(idx)
+        if has_right_child(idx) && right_child(idx).send(@op, left_child(idx))
+          selected_child_idx = right_children_index(idx)
+        end
 
-    def heapify_up; end
+        break if @items[idx].send(@op, @items[selected_child_idx])
+        swap(idx, selected_child_idx)
+        idx = selected_child_idx
+      end
+    end
+
+    def heapify_up
+      idx = size - 1
+      while has_parent(idx) && parent(idx).send(@reverse_op, @items[idx])
+        parent_idx = parent_index(idx)
+        swap(parent_idx, idx)
+        idx = parent_idx
+      end
+    end
 
     def swap(index_a, index_b)
       swapped = @items[index_b]
@@ -78,56 +106,14 @@ module DataStructures
   end
 
   class MinHeap < BaseHeap
-    private
-
-    def heapify_down
-      idx = 0
-      while has_left_child(idx)
-        smaller_child_idx = left_children_index(idx)
-        if has_right_child(idx) && right_child(idx) < left_child(idx)
-          smaller_child_idx = right_children_index(idx)
-        end
-
-        break if @items[idx] < @items[smaller_child_idx]
-        swap(idx, smaller_child_idx)
-        idx = smaller_child_idx
-      end
-    end
-
-    def heapify_up
-      idx = size - 1
-      while has_parent(idx) && parent(idx) > @items[idx]
-        parent_idx = parent_index(idx)
-        swap(parent_idx, idx)
-        idx = parent_idx
-      end
+    def initialize
+      super(:min)
     end
   end
 
   class MaxHeap < BaseHeap
-    private
-
-    def heapify_down
-      idx = 0
-      while has_left_child(idx)
-        bigger_child_idx = left_children_index(idx)
-        if has_right_child(idx) && right_child(idx) > left_child(idx)
-          bigger_child_idx = right_children_index(idx)
-        end
-
-        break if @items[idx] > @items[bigger_child_idx]
-        swap(idx, bigger_child_idx)
-        idx = bigger_child_idx
-      end
-    end
-
-    def heapify_up
-      idx = size - 1
-      while has_parent(idx) && parent(idx) < @items[idx]
-        parent_idx = parent_index(idx)
-        swap(parent_idx, idx)
-        idx = parent_idx
-      end
+    def initialize
+      super(:max)
     end
   end
 
