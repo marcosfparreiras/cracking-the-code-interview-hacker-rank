@@ -41,9 +41,9 @@ module DataStructures
 
     def heapify_down
       idx = 0
-      while has_left_child(idx)
+      while left_child?(idx)
         selected_child_idx = left_children_index(idx)
-        if has_right_child(idx) && right_child(idx).send(@op, left_child(idx))
+        if right_child?(idx) && right_child(idx).send(@op, left_child(idx))
           selected_child_idx = right_children_index(idx)
         end
 
@@ -55,7 +55,7 @@ module DataStructures
 
     def heapify_up
       idx = size - 1
-      while has_parent(idx) && parent(idx).send(@reverse_op, @items[idx])
+      while parent?(idx) && parent(idx).send(@reverse_op, @items[idx])
         parent_idx = parent_index(idx)
         swap(parent_idx, idx)
         idx = parent_idx
@@ -80,15 +80,15 @@ module DataStructures
       (child_index - 1) / 2
     end
 
-    def has_left_child(index)
+    def left_child?(index)
       left_children_index(index) < size
     end
 
-    def has_right_child(index)
+    def right_child?(index)
       right_children_index(index) < size
     end
 
-    def has_parent(index)
+    def parent?(index)
       parent_index(index) >= 0
     end
 
@@ -137,7 +137,7 @@ module DataStructures
     private
 
     def add_value(number)
-      if @lowers.size == 0 || number < @lowers.peek
+      if @lowers.size.zero? || number < @lowers.peek
         @lowers.add(number)
       else
         @highers.add(number)
@@ -145,24 +145,31 @@ module DataStructures
     end
 
     def rebalance
-      biggerHeap = @lowers.size > @highers.size ? @lowers : @highers
-      smallerHeap = @lowers.size < @highers.size ? @lowers : @highers
+      bigger_heap = retrieve_bigger_heap
+      smaller_heap = retrieve_smaller_heap
 
-      if biggerHeap.size - smallerHeap.size >= 2
-        smallerHeap.add(biggerHeap.poll)
-      end
+      need_rebalance = bigger_heap.size - smaller_heap.size >= 2
+      smaller_heap.add(bigger_heap.poll) if need_rebalance
     end
 
     def calculate_median
-      biggerHeap = @lowers.size > @highers.size ? @lowers : @highers
-      smallerHeap = @lowers.size > @highers.size ? @highers : @lowers
+      bigger_heap = retrieve_bigger_heap
+      smaller_heap = retrieve_smaller_heap
 
-      if biggerHeap.size == smallerHeap.size
-        sum = biggerHeap.peek + smallerHeap.peek
+      if bigger_heap.size == smaller_heap.size
+        sum = bigger_heap.peek + smaller_heap.peek
         (sum / 2.0).round(1)
       else
-        biggerHeap.peek.round(1)
+        bigger_heap.peek.round(1)
       end
+    end
+
+    def retrieve_bigger_heap
+      @lowers.size > @highers.size ? @lowers : @highers
+    end
+
+    def retrieve_smaller_heap
+      @lowers.size > @highers.size ? @highers : @lowers
     end
   end
 end
